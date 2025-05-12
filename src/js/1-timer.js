@@ -28,6 +28,7 @@ const options = {
 
 
         btn.addEventListener('click', ()=>{
+          btn.setAttribute('disabled', '');
 
 
         let secondsForMath = (userSelectedDate - date);
@@ -51,6 +52,7 @@ const options = {
             dataMinutes.textContent = 0;
             dataSeconds.textContent = 0;
             clearInterval(intervalId);
+            btn.removeAttribute('disabled', '')
             return;
             
           }
