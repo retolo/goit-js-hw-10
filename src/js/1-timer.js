@@ -5,6 +5,11 @@ import "flatpickr/dist/flatpickr.min.css";
 import { split } from "postcss/lib/list";
 
 
+import iziToast from "izitoast";
+
+import "izitoast/dist/css/iziToast.min.css";
+
+
 const dataDays = document.querySelector('[data-days]');
 const dataHours = document.querySelector('[data-hours]');
 const dataMinutes = document.querySelector('[data-minutes]');
@@ -23,91 +28,68 @@ const options = {
         const date = new Date();
       if(selectedDates[0] > date){
         btn.removeAttribute('disabled', '');
-        let userSelectedDate = selectedDates[0];
-
-
-
+ 
         btn.addEventListener('click', ()=>{
           btn.setAttribute('disabled', '');
 
 
-        let secondsForMath = (userSelectedDate - date);
-
-        const seconds = 60;
-        const minutes = Math.floor(secondsForMath / (1000 * 60)) % 60;
-        const hours = Math.floor(secondsForMath / (1000 * 60 * 60)) % 24;
-        const days = Math.floor(secondsForMath / (1000 * 60 * 60 * 24)) % 30;
-        
-        dataDays.textContent = days;
-        dataHours.textContent = hours;
-        dataMinutes.textContent = minutes;
-        dataSeconds.textContent = seconds;
 
         const intervalId = setInterval(() =>{
+          const now = new Date();
+          const mili = selectedDates[0] - now;
 
-
-          if(dataDays.textContent === '0' && dataHours.textContent === '0' && dataMinutes.textContent === '0' && dataSeconds.textContent === '1'){
-            dataDays.textContent = 0;
-            dataHours.textContent = 0;
-            dataMinutes.textContent = 0;
-            dataSeconds.textContent = 0;
+          if(mili <= 0){
             clearInterval(intervalId);
-            btn.removeAttribute('disabled', '')
+            updateClock(0, 0, 0, 0);
+            btn.removeEventListener()
             return;
-            
           }
-
-
-            
-            dataSeconds.textContent -= 1;
-            if(dataSeconds.textContent === '0'){
-                dataMinutes.textContent -= 1;
-                dataSeconds.textContent = 60;
-
-
-                 if(dataMinutes.textContent === '0'){
-                    dataHours.textContent -= 1;
-                    dataMinutes.textContent = 60;
-
-
-                     if(dataHours.textContent === '0'){
-                        dataDays.textContent -= 1;
-                        dataHours.textContent = 24;
-
-
-                        
-
-
-
-
-                        
+          
+          const second = 1000;
+          const minute = second * 60;
+          const hour = minute * 60;
+          const day = hour * 24;
         
-                    }
-                 }
-            }
+          // Remaining days
+          const days = Math.floor(mili / day);
+          // Remaining hours
+          const hours = Math.floor((mili % day) / hour);
+          // Remaining minutes
+          const minutes = Math.floor(((mili % day) % hour) / minute);
+          // Remaining seconds
+          const seconds = Math.floor((((mili % day) % hour) % minute) / second);
+
+          updateClock(days, hours, minutes, seconds);
+
+           
 
         }, 1000);
-
-        
-
-
 
 
         })
 
-         
-        
 
       }else{
         btn.setAttribute('disabled', '');
-        return alert('No');
+        iziToast.show({              
+          message: 'Please choose a date in the future'
+      })
       }
     },
   };
   
-;
+
+  function updateClock(days, hours, minutes, seconds){
+    dataDays.textContent = String(days).padStart(2, '0');
+    dataHours.textContent = String(hours).padStart(2, '0');
+    dataMinutes.textContent = String(minutes).padStart(2, '0');
+    dataSeconds.textContent = String(seconds).padStart(2, '0');
+  }
 
 
 
 
 flatpickr('#datetime-picker', options);
+
+
+

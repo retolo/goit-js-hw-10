@@ -16,7 +16,7 @@ form.addEventListener('submit', (event) =>{
     const form = event.currentTarget;
     const delay = input.value;
     const radio = document.querySelector('input[name="state"]:checked');
-    
+
 
     const result = new Promise((resolve, reject) =>{
 
@@ -26,22 +26,17 @@ form.addEventListener('submit', (event) =>{
 
             if(radio){
                 if(radio.value === 'fulfilled'){
-                    resolve(
-                        iziToast.show({              
-                            message: `FullFilled promise in ${delay}`
-                        })
+                    resolve(`FullFilled promise in ${delay}`);
+                        
 
-                    )
+                    
 
                 }
 
                 else{
-                    reject(
-                        iziToast.show({
-                            
-                            message: `Rejected promise in ${delay}`
-                        })
-                    )
+                    reject(`Rejected promise in ${delay}`)
+                        
+                    
                 }
 
             }
@@ -51,13 +46,18 @@ form.addEventListener('submit', (event) =>{
 
     result
     .then(value =>{
-        console.log(`✅ Fulfilled promise in ${delay}ms`);
+        iziToast.show({              
+            message: `FullFilled promise in ${delay}`
+        })
 
     })
     .catch(
         error =>{
-            console.log(`❌ Rejected promise in ${delay}ms`
-)
+            iziToast.show({
+                            
+                message: `Rejected promise in ${delay}`
+            })
+
         }
     )
 
