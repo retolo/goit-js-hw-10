@@ -14,6 +14,7 @@ const dataDays = document.querySelector('[data-days]');
 const dataHours = document.querySelector('[data-hours]');
 const dataMinutes = document.querySelector('[data-minutes]');
 const dataSeconds = document.querySelector('[data-seconds]');
+const input = document.querySelector('input');
 
 const btn = document.querySelector('button');
 
@@ -30,45 +31,57 @@ const options = {
         const date = new Date();
       if(selectedDates[0] > date){
         btn.removeAttribute('disabled', '');
+        input.setAttribute('disabled', '');
+
  
-        btn.addEventListener('click', ()=>{
-          btn.setAttribute('disabled', '');
-
-
-
-        const intervalId = setInterval(() =>{
-          const now = new Date();
-          const mili = selectedDates[0] - now;
-
-          if(mili <= 0){
-            clearInterval(intervalId);
-            updateClock(0, 0, 0, 0);
-            btn.removeEventListener()
-            return;
-          }
-          
-          const second = 1000;
-          const minute = second * 60;
-          const hour = minute * 60;
-          const day = hour * 24;
+        btn.addEventListener('click', clockTime);
         
-          // Remaining days
-          const days = Math.floor(mili / day);
-          // Remaining hours
-          const hours = Math.floor((mili % day) / hour);
-          // Remaining minutes
-          const minutes = Math.floor(((mili % day) % hour) / minute);
-          // Remaining seconds
-          const seconds = Math.floor((((mili % day) % hour) % minute) / second);
-
-          updateClock(days, hours, minutes, seconds);
-
-           
-
-        }, 1000);
 
 
-        })
+        function clockTime(){
+          btn.setAttribute('disabled', '');
+          const intervalId = setInterval(() =>{
+            const now = new Date();
+            const mili = selectedDates[0] - now;
+  
+            if(mili <= 0){
+              clearInterval(intervalId);
+              input.removeAttribute('disabled', '');
+              updateClock(0, 0, 0, 0);
+              btn.removeEventListener('click', clockTime);
+              
+              return;
+            }
+            function convertMs(ms){
+              const second = 1000;
+              const minute = second * 60;
+              const hour = minute * 60;
+              const day = hour * 24;
+            
+              // Remaining days
+              const days = Math.floor(ms / day);
+              // Remaining hours
+              const hours = Math.floor((ms % day) / hour);
+              // Remaining minutes
+              const minutes = Math.floor(((ms % day) % hour) / minute);
+              // Remaining seconds
+              const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  
+              return {days, hours, minutes, seconds};
+  
+            }
+            const resultMathTime = convertMs(mili);
+            
+  
+            updateClock(resultMathTime.days, resultMathTime.hours, resultMathTime.minutes, resultMathTime.seconds);
+  
+             
+  
+          }, 1000);
+        }
+        
+        
+        
 
 
       }else{
@@ -80,7 +93,7 @@ const options = {
     },
   };
   
-
+  
   function updateClock(days, hours, minutes, seconds){
     dataDays.textContent = String(days).padStart(2, '0');
     dataHours.textContent = String(hours).padStart(2, '0');
