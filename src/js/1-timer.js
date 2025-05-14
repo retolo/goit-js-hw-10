@@ -18,7 +18,7 @@ const input = document.querySelector('input');
 
 const btn = document.querySelector('button');
 
-
+let selectedDatesTime = null;
 
 const options = {
     enableTime: true,
@@ -28,61 +28,11 @@ const options = {
     onClose(selectedDates) {
 
 
-        const date = new Date();
+      const date = new Date();
       if(selectedDates[0] > date){
+        selectedDatesTime = selectedDates[0];
+
         btn.removeAttribute('disabled', '');
-        input.setAttribute('disabled', '');
-
- 
-        btn.addEventListener('click', clockTime);
-        
-
-
-        function clockTime(){
-          btn.setAttribute('disabled', '');
-          const intervalId = setInterval(() =>{
-            const now = new Date();
-            const mili = selectedDates[0] - now;
-  
-            if(mili <= 0){
-              clearInterval(intervalId);
-              input.removeAttribute('disabled', '');
-              updateClock(0, 0, 0, 0);
-              btn.removeEventListener('click', clockTime);
-              
-              return;
-            }
-            function convertMs(ms){
-              const second = 1000;
-              const minute = second * 60;
-              const hour = minute * 60;
-              const day = hour * 24;
-            
-              // Remaining days
-              const days = Math.floor(ms / day);
-              // Remaining hours
-              const hours = Math.floor((ms % day) / hour);
-              // Remaining minutes
-              const minutes = Math.floor(((ms % day) % hour) / minute);
-              // Remaining seconds
-              const seconds = Math.floor((((ms % day) % hour) % minute) / second);
-  
-              return {days, hours, minutes, seconds};
-  
-            }
-            const resultMathTime = convertMs(mili);
-            
-  
-            updateClock(resultMathTime.days, resultMathTime.hours, resultMathTime.minutes, resultMathTime.seconds);
-  
-             
-  
-          }, 1000);
-        }
-        
-        
-        
-
 
       }else{
         btn.setAttribute('disabled', '');
@@ -91,8 +41,58 @@ const options = {
       })
       }
     },
+    
   };
-  
+
+  btn.addEventListener('click', clockTime);
+
+
+  function clockTime(){
+    input.setAttribute('disabled', '');
+    btn.setAttribute('disabled', '');
+    const intervalId = setInterval(() =>{
+      const now = new Date();
+      const mili = selectedDatesTime - now;
+
+      if(mili <= 0){
+        clearInterval(intervalId);
+        input.removeAttribute('disabled', '');
+        updateClock(0, 0, 0, 0);
+        btn.removeEventListener('click', clockTime);
+        
+        return;
+      }
+
+
+
+      function convertMs(ms){
+        const second = 1000;
+        const minute = second * 60;
+        const hour = minute * 60;
+        const day = hour * 24;
+      
+        // Remaining days
+        const days = Math.floor(ms / day);
+        // Remaining hours
+        const hours = Math.floor((ms % day) / hour);
+        // Remaining minutes
+        const minutes = Math.floor(((ms % day) % hour) / minute);
+        // Remaining seconds
+        const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+      
+        return {days, hours, minutes, seconds};}
+      
+
+      
+      const resultMathTime = convertMs(mili);
+      
+
+      updateClock(resultMathTime.days, resultMathTime.hours, resultMathTime.minutes, resultMathTime.seconds);
+
+       
+
+    }, 1000);
+  }
   
   function updateClock(days, hours, minutes, seconds){
     dataDays.textContent = String(days).padStart(2, '0');
@@ -103,7 +103,7 @@ const options = {
 
 
 
-
+  
 flatpickr('#datetime-picker', options);
 
 
